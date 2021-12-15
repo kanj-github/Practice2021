@@ -2,7 +2,6 @@
 abstract class Heap {
 
     val array = ArrayList<Int>()
-    var size = 0
 
     fun parent(i: Int) = if (i > 0) (i - 1)/2 else -1
 
@@ -20,7 +19,7 @@ abstract class Heap {
 
     abstract fun getChildIndexToSwap(i : Int): Int
 
-    fun swap(one: Int, other: Int) {
+    private fun swap(one: Int, other: Int) {
         val temp = array[one]
         array[one] = array[other]
         array[other] = temp
@@ -29,9 +28,8 @@ abstract class Heap {
     fun insert(num: Int) {
 
         array.add(num)
-        size++
 
-        for (i in parent(size - 1) downTo 0) {
+        for (i in parent(array.size - 1) downTo 0) {
             heapify(i)
         }
     }
@@ -40,18 +38,18 @@ abstract class Heap {
 
         val ret = array[0]
         array[0] = array.removeLast()
-        size--
 
         heapify(0)
         return ret
     }
 }
 
-class MaxHeap : Heap() {
+open class MaxHeap : Heap() {
 
     override fun getChildIndexToSwap(i: Int): Int {
 
         val parent = array[i]
+        val size = array.size
 
         val left = left(i)
         val leftChild = if (left < size) array[left] else null
@@ -76,6 +74,7 @@ class MinHeap : Heap() {
     override fun getChildIndexToSwap(i: Int): Int {
 
         val parent = array[i]
+        val size = array.size
 
         val left = left(i)
         val leftChild = if (left < size) array[left] else null
@@ -112,7 +111,7 @@ fun findMedian(arr: Array<Int>): Array<Int> {
         }
 
         // Balance heap
-        var sizeDifference = leftHeap.size - rightHeap.size
+        var sizeDifference = leftHeap.array.size - rightHeap.array.size
         if (sizeDifference == 2) {
             // Left side has 2 more items. Move 1 to right
             val leftTop = leftHeap.getTop()
@@ -124,7 +123,7 @@ fun findMedian(arr: Array<Int>): Array<Int> {
         }
 
         // Calculate median
-        sizeDifference = leftHeap.size - rightHeap.size
+        sizeDifference = leftHeap.array.size - rightHeap.array.size
         if (sizeDifference == 0) {
             median = (leftHeap.array[0] + rightHeap.array[0]) / 2
         } else if (sizeDifference == 1) {
