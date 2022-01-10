@@ -1,5 +1,7 @@
 import java.util.Stack
 
+// Use stack, create binary tree
+
 class BinaryNode<T>(val value: T, var left: BinaryNode<T>? = null, var right: BinaryNode<T>? = null) {
 
     fun printPreorder() {
