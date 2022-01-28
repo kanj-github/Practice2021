@@ -8,7 +8,7 @@ fun lengthOfLongestSubstring(s: String): Int {
     var maxsize = 0
     var i = 0
 
-    for (j in 0 until s.length) {
+    for (j in s.indices) {
 
         val c = s[j]
 
