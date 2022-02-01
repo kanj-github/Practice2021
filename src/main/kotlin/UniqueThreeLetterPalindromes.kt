@@ -2,11 +2,11 @@
 
 // Used memoisation to avoid repeated calculations
 class UniqueThreeLetterPalindromes {
+
     fun countPalindromicSubsequence(s: String): Int {
 
         val sc = mutableSetOf<Char>()
         val lim = mutableMapOf<Char, Int>()
-        val ucm = mutableMapOf<Pair<Int, Int>, Int>()
 
         var count = 0
 
@@ -19,7 +19,8 @@ class UniqueThreeLetterPalindromes {
             }
 
             val li = getLastIndexOf(c, s, lim)
-            count += getUniqueCharactersBetween(i, li, s, ucm)
+
+            count += getUniqueCharactersBetween(i, li, s)
 
             sc.add(c)
         }
@@ -38,10 +39,12 @@ class UniqueThreeLetterPalindromes {
         return i
     }
 
-    private fun getUniqueCharactersBetween(s: Int, e: Int, str: String, ucm: MutableMap<Pair<Int, Int>, Int>): Int {
+    private fun getUniqueCharactersBetween(s: Int, e: Int, str: String): Int {
 
-        ucm[Pair(s, e)]?.let {
-            return it
+        if (e-s < 2) {
+            return 0
+        } else if (e-s == 2) {
+            return 1
         }
 
         val cs = mutableSetOf<Char>()
@@ -49,7 +52,6 @@ class UniqueThreeLetterPalindromes {
             cs.add(str[i])
         }
 
-        ucm[Pair(s, e)] = cs.size
         return cs.size
     }
 }
