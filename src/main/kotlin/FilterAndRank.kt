@@ -1,6 +1,6 @@
 // https://leetcode.com/problems/filter-restaurants-by-vegan-friendly-price-and-distance/
 
-class Solution {
+class FilterAndRank {
 
     class Node(val restId: Int, val rating: Int, var left: Node? = null, var right: Node? = null) {
 
