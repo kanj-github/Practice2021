@@ -1,8 +1,15 @@
 // https://leetcode.com/problems/complete-binary-tree-inserter/
 
 class TreeNode(var v: Int) {
-  var left: TreeNode? = null
-  var right: TreeNode? = null
+
+    var left: TreeNode? = null
+    var right: TreeNode? = null
+
+    fun print() {
+        println("$v left = ${left?.v}, right = ${right?.v}")
+        left?.print()
+        right?.print()
+    }
 }
 
 // It will be initialised with a complete binary tree. Not just a root node.
