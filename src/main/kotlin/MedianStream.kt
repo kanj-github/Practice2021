@@ -1,3 +1,47 @@
+import java.util.PriorityQueue
+import kotlin.math.abs
+
+// https://leetcode.com/problems/find-median-from-data-stream/description
+class MedianFinder() {
+
+    private var median = 0.0
+
+    // Max PQ
+    val leftHeap = PriorityQueue<Int> { a, b -> b - a }
+
+    // Min PQ
+    val rightHeap = PriorityQueue<Int> { a, b -> a - b }
+
+    fun addNum(num: Int) {
+
+        if (num < median) {
+            leftHeap.offer(num)
+        } else {
+            rightHeap.offer(num)
+        }
+
+        val sizeDiff = leftHeap.size - rightHeap.size
+        if (sizeDiff == 2) {
+            rightHeap.offer(leftHeap.poll())
+        } else if (sizeDiff == -2) {
+            leftHeap.offer(rightHeap.poll())
+        }
+
+        when (leftHeap.size - rightHeap.size) {
+            0 -> {
+                median = (leftHeap.peek() + rightHeap.peek()) / 2.0
+            }
+            1 -> {
+                median = leftHeap.peek().toDouble()
+            }
+            -1 -> {
+                median = rightHeap.peek().toDouble()
+            }
+        }
+    }
+
+    fun findMedian() = median
+}
 
 abstract class Heap {
 
