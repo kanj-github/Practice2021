@@ -61,7 +61,29 @@ abstract class Heap {
         }
     }
 
-    abstract fun getChildIndexToSwap(i : Int): Int
+    private fun getChildIndexToSwap(i : Int): Int {
+
+        val parent = array[i]
+        val size = array.size
+
+        val left = left(i)
+        val leftChild = if (left < size) array[left] else null
+
+        val right = right(i)
+        val rightChild = if (right < size) array[right] else null
+
+        if (leftChild != null && firstGoesAboveSecond(leftChild, parent) && (rightChild == null || firstGoesAboveSecond(leftChild, rightChild))) {
+            return left
+        }
+
+        if (rightChild != null && firstGoesAboveSecond(rightChild, parent) && (leftChild == null || firstGoesAboveSecond(rightChild, leftChild))) {
+            return right
+        }
+
+        return -1
+    }
+
+    abstract fun firstGoesAboveSecond(first: Int, second: Int): Boolean
 
     private fun swap(one: Int, other: Int) {
         val temp = array[one]
@@ -89,53 +111,11 @@ abstract class Heap {
 }
 
 open class MaxHeap : Heap() {
-
-    override fun getChildIndexToSwap(i: Int): Int {
-
-        val parent = array[i]
-        val size = array.size
-
-        val left = left(i)
-        val leftChild = if (left < size) array[left] else null
-
-        val right = right(i)
-        val rightChild = if (right < size) array[right] else null
-
-        if (leftChild != null && leftChild > parent && (rightChild == null || leftChild > rightChild)) {
-            return left
-        }
-
-        if (rightChild != null && rightChild > parent && (leftChild == null || rightChild > leftChild)) {
-            return right
-        }
-
-        return -1
-    }
+    override fun firstGoesAboveSecond(first: Int, second: Int) = first > second
 }
 
 class MinHeap : Heap() {
-
-    override fun getChildIndexToSwap(i: Int): Int {
-
-        val parent = array[i]
-        val size = array.size
-
-        val left = left(i)
-        val leftChild = if (left < size) array[left] else null
-
-        val right = right(i)
-        val rightChild = if (right < size) array[right] else null
-
-        if (leftChild != null && leftChild < parent && (rightChild == null || leftChild < rightChild)) {
-            return left
-        }
-
-        if (rightChild != null && rightChild < parent && (leftChild == null || rightChild < leftChild)) {
-            return right
-        }
-
-        return -1
-    }
+    override fun firstGoesAboveSecond(first: Int, second: Int) = first < second
 }
 
 fun findMedian(arr: Array<Int>): Array<Int> {
