@@ -13,7 +13,7 @@ class QuickSelect {
             } else if (pi > expectedPi) {
                 e = pi - 1
             } else {
-                return pi
+                return nums[pi]
             }
         }
 
@@ -52,5 +52,5 @@ class QuickSelect {
 
 fun main() {
     val qs = QuickSelect()
-    println(qs.findKthLargest(intArrayOf(3,2,1,5,6,4), 2))
+    println(qs.findKthLargest(intArrayOf(3,2,1,5,6,4), 5))
 }
