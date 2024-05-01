@@ -5,7 +5,7 @@ class ExpressionsUsingDigits {
     fun addOperators(num: String, target: Int): List<String> {
 
         if (num.length == 1) {
-            return if (num[0].toInt() - '0'.toInt() == target) listOf(num) else results
+            return if (num[0].code - '0'.code == target) listOf(num) else results
         }
 
         val powerOfFour = num.length - 1
@@ -112,7 +112,7 @@ class ExpressionsUsingDigits {
         var powerOfTen = 1
         var num = 0L
         for (i in e downTo s) {
-            num += powerOfTen * (chars[i].toInt() - '0'.toInt())
+            num += powerOfTen * (chars[i].code - '0'.code)
             powerOfTen *= 10
         }
 
