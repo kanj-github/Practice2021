@@ -5,7 +5,7 @@ class ExpressionsUsingDigits {
     fun addOperators(num: String, target: Int): List<String> {
 
         if (num.length == 1) {
-            return if (num[0].code - '0'.code == target) listOf(num) else results
+            return if (num[0].toInt() - '0'.toInt() == target) listOf(num) else results
         }
 
         val powerOfFour = num.length - 1
@@ -34,107 +34,82 @@ class ExpressionsUsingDigits {
 
     private fun isValid(chars: List<Char>, target: Int): Boolean {
 
-        val exps = getExpressions(chars)
-        exps ?: return false
+        val value = calculate(chars)
+        value ?: return false
 
-        // Multiply first
-        val multipliedExps = performMultiplications(exps)
+        return value == target.toLong()
+    }
 
-        // Add and subtract now
-        val firstExp = multipliedExps[0]
-        val firstN = if (firstExp is Exp.Num) firstExp.n else null
-        firstN ?: return false
+    private fun calculate(chars: List<Char>): Long? {
 
-        var total: Long = firstN
+        var exp1 = 0L
+        var exp2 = 1L
+        var op: Char? = null
+        var i = 0
 
-        for (i in 2 until multipliedExps.size) {
-            val exp = multipliedExps[i]
-            if (exp !is Exp.Num) {
-                continue
+        while (i < chars.size) {
+            val nextNum = readNumber(chars, i)
+            nextNum ?: return null
+
+            i = nextNum.second
+
+            if (i == chars.size) {
+                val op1 = op
+                if (op1 != null) {
+                    exp1 = performOp(op1, exp1, exp2 * nextNum.first)
+                } else {
+                    exp1 = exp2 * nextNum.first
+                }
+                break
             }
-            val prev = multipliedExps[i - 1]
-            if (prev !is Exp.Op) {
-                continue
-            }
 
-            when (prev.ch) {
-                '+' -> total += exp.n
-                '-' -> total -= exp.n
+            if (chars[i] == '+' || chars[i] == '-') {
+                val operation = op
+                if (operation == null) {
+                    exp1 = exp2 * nextNum.first
+                } else {
+                    exp1 = performOp(operation, exp1, exp2 * nextNum.first)
+                }
+                exp2 = 1L
+                op = chars[i++]
+            } else if (chars[i] == '*') {
+                exp2 *= nextNum.first
+                i++
             }
         }
 
-        return total == target.toLong()
+        return exp1
     }
 
-    private fun getExpressions(chars: List<Char>): List<Exp>? {
-        var i = 0
-        val exps = arrayListOf<Exp>()
+    private fun performOp(ch: Char, a: Long, b: Long): Long {
+        return when (ch) {
+            '+' -> a + b
+            '-' -> a - b
+            '*' -> a * b
+            else -> error("Unknown op")
+        }
+    }
+
+    private fun readNumber(chars: List<Char>, s: Int): Pair<Long, Int>? {
+
+        if (chars[s] == '0' && s + 1 < chars.size && chars[s + 1].isDigit()) {
+            return null
+        }
+
+        var num = 0L
+        var i = s
         while (i < chars.size) {
-            val nextOpI = findOperatorAfter(i, chars)
-            val lastDigitI = if (nextOpI == -1) chars.size - 1 else nextOpI - 1
-            val num = decodeToInt(chars, i, lastDigitI)
-            num ?: return null
-            exps.add(Exp.Num(num))
-            if (nextOpI != -1) {
-                exps.add(Exp.Op(chars[nextOpI]))
-                i = nextOpI + 1
+            val ch = chars[i]
+            if (ch.isDigit()) {
+                num *= 10L
+                num += (ch.code - '0'.code).toLong()
             } else {
                 break
             }
-        }
-        return exps
-    }
-
-    private fun performMultiplications(exps: List<Exp>): List<Exp> {
-        val multipliedExps = arrayListOf(exps[0])
-        for (i in 1 until exps.size) {
-            val prev = exps[i - 1]
-            val exp = exps[i]
-            if (prev is Exp.Op && prev.ch == '*') {
-                val lastInM = multipliedExps.last()
-                if (lastInM is Exp.Num && exp is Exp.Num) {
-                    lastInM.multiplyBy(exp.n)
-                }
-            } else if (exp is Exp.Num || (exp is Exp.Op && exp.ch != '*')) {
-                multipliedExps.add(exp)
-            }
-        }
-        return multipliedExps
-    }
-
-    private fun decodeToInt(chars: List<Char>, s: Int, e: Int): Long? {
-
-        if (chars[s] == '0') {
-            // 0 is acceptable, leading 0s are not
-            return if (s == e) 0 else null
+            i++
         }
 
-        var powerOfTen = 1
-        var num = 0L
-        for (i in e downTo s) {
-            num += powerOfTen * (chars[i].code - '0'.code)
-            powerOfTen *= 10
-        }
-
-        return num
-    }
-
-    private fun findOperatorAfter(i: Int, chars: List<Char>): Int {
-        if (i >= chars.size - 1) {
-            return -1
-        }
-
-        for (j in i + 1 until chars.size) {
-            if (isOperator(chars[j])) {
-                return j
-            }
-        }
-
-        return -1
-    }
-
-    private fun isOperator(ch: Char): Boolean {
-        return ch == '+' || ch == '-' || ch == '*'
+        return Pair(num, i)
     }
 
     private fun operatorAfter(i: Int, rank: Int): Char? {
@@ -148,14 +123,8 @@ class ExpressionsUsingDigits {
         }
     }
 
-    sealed class Exp {
-        class Num(var n: Long) : Exp() {
-            fun multiplyBy(x: Long) {
-                n *= x
-            }
-        }
-
-        class Op(val ch: Char) : Exp()
+    private fun isOperator(ch: Char): Boolean {
+        return ch == '+' || ch == '-' || ch == '*'
     }
 }
 
